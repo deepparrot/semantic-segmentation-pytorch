@@ -113,7 +113,7 @@ for model in models:
     gpu = 0
 
     cfg.merge_from_file(model['config'])
-    cfg.DATASET['root_dataset'] = './.data/vision/ade20k/ADEChallengeData2016'
+    cfg.DATASET['root_dataset'] = './.data/vision/ade20k'
     cfg.DATASET['list_train'] = "./.data/vision/ade20k/training.odgt"
     cfg.DATASET['list_val'] = "./.data/vision/ade20k/validation.odgt"
 
