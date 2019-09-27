@@ -1,5 +1,6 @@
 numpy
 scipy
+sotabencheval
 torch
 torchvision
 opencv-python
