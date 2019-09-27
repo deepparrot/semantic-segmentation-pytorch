@@ -101,62 +101,69 @@ CFG_STR = './config/ade20k-hrnetv2.yaml'
 MODEL_NAME = 'HRNetV2 (HRNetV2-W48)'
 PAPER_ARXIV_ID = '1904.04514'
 
-gpu = 0
+models = []
+models.append({'config': './config/ade20k-mobilenetv2dilated-c1_deepsup.yaml', 
+               'model_name': 'MobileNetV2dilated + C1_deepsup', 
+               'arxiv_id': '1801.04381'})
 
-cfg.merge_from_file(CFG_STR)
-cfg['root_dataset'] = './.data/vision/ade20k/ADEChallengeData2016'
-cfg['list_train'] = "./data/training.odgt"
-cfg['list_val'] = "./data/validation.odgt"
+for model in models:
 
-BATCH_SIZE = cfg.VAL.batch_size
-BATCH_SIZE = 32
+    gpu = 0
 
-# absolute paths of model weights
-cfg.MODEL.weights_encoder = os.path.join(
-    cfg.DIR, 'encoder_' + cfg.VAL.checkpoint)
-cfg.MODEL.weights_decoder = os.path.join(
-    cfg.DIR, 'decoder_' + cfg.VAL.checkpoint)
-assert os.path.exists(cfg.MODEL.weights_encoder) and \
-    os.path.exists(cfg.MODEL.weights_decoder), "checkpoint does not exitst!"
+    cfg.merge_from_file(model['config'])
+    cfg['root_dataset'] = './.data/vision/ade20k/ADEChallengeData2016'
+    cfg['list_train'] = "./data/training.odgt"
+    cfg['list_val'] = "./data/validation.odgt"
 
-if not os.path.isdir(os.path.join(cfg.DIR, "result")):
-    os.makedirs(os.path.join(cfg.DIR, "result"))
+    BATCH_SIZE = cfg.VAL.batch_size
+    BATCH_SIZE = 32
 
-torch.cuda.set_device(gpu)
+    # absolute paths of model weights
+    cfg.MODEL.weights_encoder = os.path.join(
+        cfg.DIR, 'encoder_' + cfg.VAL.checkpoint)
+    cfg.MODEL.weights_decoder = os.path.join(
+        cfg.DIR, 'decoder_' + cfg.VAL.checkpoint)
+    assert os.path.exists(cfg.MODEL.weights_encoder) and \
+        os.path.exists(cfg.MODEL.weights_decoder), "checkpoint does not exitst!"
 
-# Network Builders
-net_encoder = ModelBuilder.build_encoder(
-    arch=cfg.MODEL.arch_encoder.lower(),
-    fc_dim=cfg.MODEL.fc_dim,
-    weights=cfg.MODEL.weights_encoder)
-net_decoder = ModelBuilder.build_decoder(
-    arch=cfg.MODEL.arch_decoder.lower(),
-    fc_dim=cfg.MODEL.fc_dim,
-    num_class=cfg.DATASET.num_class,
-    weights=cfg.MODEL.weights_decoder,
-    use_softmax=True)
+    if not os.path.isdir(os.path.join(cfg.DIR, "result")):
+        os.makedirs(os.path.join(cfg.DIR, "result"))
 
-crit = nn.NLLLoss(ignore_index=-1)
+    torch.cuda.set_device(gpu)
 
-segmentation_module = SegmentationModule(net_encoder, net_decoder, crit)
+    # Network Builders
+    net_encoder = ModelBuilder.build_encoder(
+        arch=cfg.MODEL.arch_encoder.lower(),
+        fc_dim=cfg.MODEL.fc_dim,
+        weights=cfg.MODEL.weights_encoder)
+    net_decoder = ModelBuilder.build_decoder(
+        arch=cfg.MODEL.arch_decoder.lower(),
+        fc_dim=cfg.MODEL.fc_dim,
+        num_class=cfg.DATASET.num_class,
+        weights=cfg.MODEL.weights_decoder,
+        use_softmax=True)
 
-# Dataset and Loader
-dataset_val = ValDataset(
-    cfg.DATASET.root_dataset,
-    cfg.DATASET.list_val,
-    cfg.DATASET)
-loader_val = torch.utils.data.DataLoader(
-    dataset_val,
-    batch_size=BATCH_SIZE,
-    shuffle=False,
-    collate_fn=user_scattered_collate,
-    num_workers=5,
-    drop_last=True)
+    crit = nn.NLLLoss(ignore_index=-1)
 
-segmentation_module.cuda()
+    segmentation_module = SegmentationModule(net_encoder, net_decoder, crit)
 
-# Main loop
-evaluate(segmentation_module, loader_val, cfg, gpu, MODEL_NAME, PAPER_ARXIV_ID)
+    # Dataset and Loader
+    dataset_val = ValDataset(
+        cfg.DATASET.root_dataset,
+        cfg.DATASET.list_val,
+        cfg.DATASET)
+    loader_val = torch.utils.data.DataLoader(
+        dataset_val,
+        batch_size=BATCH_SIZE,
+        shuffle=False,
+        collate_fn=user_scattered_collate,
+        num_workers=5,
+        drop_last=True)
 
-print('Evaluation Done!')
+    segmentation_module.cuda()
+
+    # Main loop
+    evaluate(segmentation_module, loader_val, cfg, gpu, model['model_name'], model['arxiv_id'])
+
+    print('Evaluation Done!')
 
