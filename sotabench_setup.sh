@@ -1,5 +1,10 @@
 apt-get install unzip
-cd ./.data/vision/ade20k
+ls
+cd .data
+ls
+cd vision
+ls
+cd ade20k
 ls
 echo 'Now unzipping'
 unzip ADEChallengeData2016.zip
