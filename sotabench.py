@@ -95,7 +95,7 @@ def evaluate(segmentation_module, loader, cfg, gpu):
 assert LooseVersion(torch.__version__) >= LooseVersion('0.4.0'), \
     'PyTorch>=0.4.0 is required'
 
-cfg_str = 'ade20k-hrnetv2.yaml'
+cfg_str = './config/ade20k-hrnetv2.yaml'
 gpu = 0
 
 cfg.merge_from_file(cfg_str)
