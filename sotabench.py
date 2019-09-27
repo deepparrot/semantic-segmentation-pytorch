@@ -113,9 +113,9 @@ for model in models:
     gpu = 0
 
     cfg.merge_from_file(model['config'])
-    cfg['root_dataset'] = './.data/vision/ade20k/ADEChallengeData2016'
-    cfg['list_train'] = "./.data/vision/ade20k/training.odgt"
-    cfg['list_val'] = "./.data/vision/ade20k/validation.odgt"
+    cfg.DATASET['root_dataset'] = './.data/vision/ade20k/ADEChallengeData2016'
+    cfg.DATASET['list_train'] = "./.data/vision/ade20k/training.odgt"
+    cfg.DATASET['list_val'] = "./.data/vision/ade20k/validation.odgt"
 
     BATCH_SIZE = cfg.VAL.batch_size
     BATCH_SIZE = 32
