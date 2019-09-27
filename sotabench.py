@@ -18,6 +18,8 @@ from lib.utils import as_numpy
 from PIL import Image
 from tqdm import tqdm
 
+from sotabencheval.semantic_segmentation import ADE20KEvaluator
+
 colors = loadmat('data/color150.mat')['colors']
 
 
