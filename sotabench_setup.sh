@@ -1,3 +1,6 @@
 apt-get install unzip
-unzip ./.data/vision/ade20k/ADEChallengeData2016.zip -d ./.data/vision/ade20k/
+cd .data/vision/ade20k
+ls
+echo 'Now unzipping'
+unzip ADEChallengeData2016.zip
 echo "Dataset downloaded."
