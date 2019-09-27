@@ -38,12 +38,12 @@ def visualize_result(data, pred, dir_result):
     Image.fromarray(im_vis).save(os.path.join(dir_result, img_name.replace('.jpg', '.png')))
 
 
-def evaluate(segmentation_module, loader, cfg, gpu):
+def evaluate(segmentation_module, loader, cfg, gpu, model_name, paper_arxiv_id):
     acc_meter = AverageMeter()
     intersection_meter = AverageMeter()
     union_meter = AverageMeter()
     time_meter = AverageMeter()
-    evaluator = ADE20KEvaluator(model_name='HRNetV2 (HRNetV2-W48)', paper_arxiv_id='1904.04514')
+    evaluator = ADE20KEvaluator(model_name=model_name, paper_arxiv_id=paper_arxiv_id)
 
     segmentation_module.eval()
 
@@ -95,10 +95,15 @@ def evaluate(segmentation_module, loader, cfg, gpu):
 assert LooseVersion(torch.__version__) >= LooseVersion('0.4.0'), \
     'PyTorch>=0.4.0 is required'
 
-cfg_str = './config/ade20k-hrnetv2.yaml'
+
+# Model
+CFG_STR = './config/ade20k-hrnetv2.yaml'
+MODEL_NAME = 'HRNetV2 (HRNetV2-W48)'
+PAPER_ARXIV_ID = '1904.04514'
+
 gpu = 0
 
-cfg.merge_from_file(cfg_str)
+cfg.merge_from_file(CFG_STR)
 cfg['root_dataset'] = './.data/vision/ade20k/ADEChallengeData2016'
 cfg['list_train'] = "./data/training.odgt"
 cfg['list_val'] = "./data/validation.odgt"
@@ -151,7 +156,7 @@ loader_val = torch.utils.data.DataLoader(
 segmentation_module.cuda()
 
 # Main loop
-evaluate(segmentation_module, loader_val, cfg, gpu)
+evaluate(segmentation_module, loader_val, cfg, gpu, MODEL_NAME, PAPER_ARXIV_ID)
 
 print('Evaluation Done!')
 
