@@ -2,6 +2,6 @@ numpy
 scipy
 torch
 torchvision
-opencv3
+opencv-python
 yacs
 tqdm
