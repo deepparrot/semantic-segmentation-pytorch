@@ -87,7 +87,7 @@ def evaluate(segmentation_module, loader, cfg, gpu, model_name, paper_arxiv_id):
         intersection_meter.update(intersection)
         union_meter.update(union)
         
-        evaluator.update(output=pred.flatten().cpu().numpy(), target=seg_label.flatten().cpu().numpy())
+        evaluator.add(output=pred.flatten().cpu().numpy(), target=seg_label.flatten().cpu().numpy())
         
         if evaluator.cache_exists:
           break
